@@ -1,0 +1,212 @@
+# React Server Components (RSC)
+
+## What is RSC?
+
+React Server Components (RSC) are components that **run only on the server**.
+
+In **Next.js App Router**, every component is a **Server Component by default**.
+
+If a component needs interactivity (button click, form, useState, useEffect, browser APIs, etc.), add `"use client"` to make it a **Client Component**.
+
+---
+
+# Why RSC?
+
+Instead of sending JavaScript for the entire page, Next.js sends JavaScript **only for interactive components**.
+
+This reduces the JavaScript bundle size and improves performance.
+
+---
+
+# RSC Flow
+
+```text
+User Request
+      │
+      ▼
+Server
+      │
+      ├── Fetch Data
+      ├── Render Server Components
+      └── Generate HTML
+      │
+      ▼
+Browser Receives HTML
+      │
+      ▼
+Shows Content
+      │
+      ▼
+Hydrate Only Client Components
+      │
+      ▼
+Interactive UI
+```
+
+---
+
+# Example Structure
+
+```text
+Page
+│
+├── Navbar        (Server Component)
+├── Products      (Server Component)
+├── Footer        (Server Component)
+└── Counter       (Client Component)
+```
+
+Only **Counter** sends JavaScript to the browser because it is interactive.
+
+---
+
+# Server Component Example
+
+```tsx
+export default async function Products() {
+
+    const res = await fetch("https://dummyjson.com/products");
+
+    const data = await res.json();
+
+    return (
+        <div>
+            {data.products.map(product => (
+                <p key={product.id}>{product.title}</p>
+            ))}
+        </div>
+    );
+}
+```
+
+No `"use client"` is needed.
+
+---
+
+# Client Component Example
+
+```tsx
+"use client";
+
+import { useState } from "react";
+
+export default function Counter() {
+
+    const [count, setCount] = useState(0);
+
+    return (
+        <button onClick={() => setCount(count + 1)}>
+            {count}
+        </button>
+    );
+}
+```
+
+Only this component's JavaScript is sent to the browser.
+
+---
+
+# What Can Server Components Do?
+
+- Fetch data from APIs.
+- Fetch data from databases.
+- Read files.
+- Access server-side resources.
+- Render HTML.
+
+---
+
+# What Can't Server Components Do?
+
+Server Components **cannot** use:
+
+- `useState`
+- `useEffect`
+- `useReducer`
+- `onClick`
+- `onChange`
+- `window`
+- `document`
+- `localStorage`
+
+For these features, use `"use client"`.
+
+---
+
+# Advantages
+
+- Smaller JavaScript bundle.
+- Faster page load.
+- Better performance.
+- Better SEO.
+- Direct server-side data fetching.
+- Improved security (server-only code).
+- Only interactive components are hydrated.
+
+---
+
+# Disadvantages
+
+- Cannot use React client hooks.
+- Cannot access browser APIs.
+- Cannot handle user interactions directly.
+- Interactive components must use `"use client"`.
+
+---
+
+# RSC in Next.js
+
+- Default component type in the App Router.
+- No `"use client"` → Server Component.
+- `"use client"` → Client Component.
+
+---
+
+# When to Use RSC
+
+Use Server Components for:
+
+- Navbar
+- Footer
+- Product List
+- Blog Posts
+- Documentation
+- News Pages
+- Database Queries
+- API Data Fetching
+- Static UI
+
+Use Client Components for:
+
+- Buttons
+- Forms
+- Search Box
+- Modal
+- Theme Toggle
+- Counter
+- Dropdown
+- Components using `useState` or `useEffect`
+
+---
+
+# CSR vs SSR vs RSC
+
+| Feature | CSR | SSR | RSC |
+|---------|-----|-----|-----|
+| Runs On | Browser | Server | Server |
+| HTML | Empty Initially | Complete | Complete |
+| JavaScript Sent | Large Bundle | Large Bundle (Hydration) | Only Client Components |
+| Data Fetching | Browser | Server | Server |
+| Interactivity | Immediate after JS loads | After Hydration | Only Client Components |
+| SEO | Poor | Excellent | Excellent |
+| Performance | Good After Load | Good | Best |
+
+---
+
+# Summary
+
+- RSC is the default component type in Next.js App Router.
+- Server Components run only on the server.
+- They do not send their JavaScript to the browser.
+- Only interactive components use `"use client"`.
+- This reduces JavaScript, improves performance, and keeps SEO excellent.
