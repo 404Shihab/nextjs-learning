@@ -1,0 +1,293 @@
+# Server-Side Rendering (SSR)
+
+## What is SSR?
+
+Server-Side Rendering (SSR) is a rendering technique where the **server generates the complete HTML** before sending it to the browser.
+
+Unlike CSR, the browser receives a page that already contains the content.
+
+---
+
+# SSR Flow
+
+```text
+User Request
+      │
+      ▼
+Server
+      │
+      ├── Fetch Data
+      ├── Render HTML
+      └── Generate Complete Page
+      │
+      ▼
+Send HTML + CSS + JavaScript
+      │
+      ▼
+Browser Shows Content (FCP)
+      │
+      ▼
+Download JavaScript
+      │
+      ▼
+Hydration
+      │
+      ▼
+Interactive Page (TTI)
+```
+
+---
+
+# What Does the Server Send?
+
+Example:
+
+```html
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Products</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>Products</h1>
+
+    <p>Laptop</p>
+    <p>Phone</p>
+    <p>Tablet</p>
+
+    <script src="main.js"></script>
+
+</body>
+
+</html>
+```
+
+Unlike CSR, the HTML already contains the content.
+
+---
+
+# What Happens in the Browser?
+
+### Step 1
+
+Browser receives HTML.
+
+### Step 2
+
+Browser immediately paints the HTML using CSS.
+
+✅ User can already see the page.
+
+This is why **FCP is fast**.
+
+### Step 3
+
+Browser downloads JavaScript.
+
+### Step 4
+
+React performs **Hydration**.
+
+Hydration attaches:
+
+- Event handlers
+- React state
+- Interactivity
+
+After hydration, buttons and forms start working.
+
+---
+
+# Hydration
+
+Hydration means React connects JavaScript to the HTML already rendered by the server.
+
+Before Hydration:
+
+✅ Page is visible
+
+❌ Buttons don't work yet
+
+After Hydration:
+
+✅ Buttons work
+
+✅ Forms work
+
+✅ React state works
+
+---
+
+# Timeline
+
+```text
+Request
+      │
+      ▼
+Server Fetches Data
+      │
+      ▼
+Render HTML
+      │
+      ▼
+Receive HTML
+      │
+      ▼
+FCP ✅ (Content Visible)
+      │
+      ▼
+Download JS
+      │
+      ▼
+Hydration
+      │
+      ▼
+TTI ✅ (Interactive)
+```
+
+---
+
+# FCP (First Contentful Paint)
+
+FCP is usually **fast** in SSR because the browser receives real HTML with content.
+
+The user doesn't have to wait for JavaScript to see the page.
+
+---
+
+# TTI (Time to Interactive)
+
+TTI is usually **slower than FCP** because JavaScript still needs to download and hydrate the page.
+
+The page becomes fully interactive only after hydration.
+
+---
+
+# SEO
+
+SSR is excellent for SEO.
+
+Reason:
+
+Search engine bots (Google, Bing, etc.) receive the complete HTML immediately.
+
+Example:
+
+```text
+Google Bot
+      │
+      ▼
+Requests Page
+      │
+      ▼
+Server Sends Complete HTML
+      │
+      ▼
+Bot Reads Content
+      │
+      ▼
+Easy to Index
+```
+
+Since the HTML already contains:
+
+- Headings
+- Paragraphs
+- Images
+- Meta tags
+
+Search engines can index the page easily.
+
+---
+
+# Advantages
+
+- Fast FCP.
+- Excellent SEO.
+- Better user experience on the first load.
+- Users see content immediately.
+- Social media previews work well.
+
+---
+
+# Disadvantages
+
+- Every request requires server rendering.
+- Higher server load.
+- Slower server response (TTFB may increase).
+- Hydration is still required.
+- TTI is slower than FCP.
+- Can become expensive under heavy traffic.
+
+---
+
+# SSR in Next.js
+
+Example:
+
+```tsx
+export default async function Page() {
+
+    const res = await fetch("https://jsonplaceholder.typicode.com/users");
+
+    const users = await res.json();
+
+    return (
+        <div>
+            {users.map(user => (
+                <p key={user.id}>{user.name}</p>
+            ))}
+        </div>
+    );
+}
+```
+
+No `"use client"` is needed.
+
+The component runs on the server.
+
+---
+
+# When to Use SSR
+
+- News websites
+- Blogs
+- E-commerce product pages
+- Marketing websites
+- Landing pages
+- Public pages that need SEO
+
+---
+
+# SSR vs CSR
+
+| Feature | CSR | SSR |
+|---------|-----|-----|
+| Rendering | Browser | Server |
+| Initial HTML | Almost Empty | Complete |
+| FCP | Slower | Faster |
+| TTI | Higher | After Hydration |
+| SEO | Poor | Excellent |
+| Initial Load | Slower | Faster |
+| Server Load | Low | High |
+| Browser Work | High | Lower |
+| Best For | Dashboards, Apps | Public SEO Pages |
+
+---
+
+# Summary
+
+- Rendering happens on the server.
+- Server sends complete HTML with data.
+- Browser displays content immediately.
+- Fast FCP.
+- JavaScript then hydrates the page.
+- After hydration, the page becomes interactive.
+- Excellent SEO because search engines receive complete HTML.
+- Higher server load than CSR.

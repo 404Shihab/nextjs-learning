@@ -1,0 +1,224 @@
+# Client-Side Rendering (CSR)
+
+## What is CSR?
+
+Client-Side Rendering (CSR) is a rendering technique where the **browser (client)** is responsible for rendering the webpage.
+
+The server sends a minimal **HTML + CSS + JavaScript**. After JavaScript is downloaded and executed, it renders the UI and fetches data if needed.
+
+---
+
+# CSR Flow
+
+```text
+User Request
+      │
+      
+Server
+      │
+      
+HTML + CSS + JavaScript
+      │
+      
+Browser Loads HTML & CSS
+      │
+      
+Downloads JavaScript
+      │
+      
+Executes JavaScript
+      │
+      
+Fetch API (if needed)
+      │
+      
+Render UI
+      │
+      
+Interactive Page
+```
+
+---
+
+# Initial HTML
+
+The server usually sends only the **application shell**.
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="root"></div>
+
+    <script src="main.js"></script>
+
+</body>
+</html>
+```
+
+**Contains:**
+- HTML structure
+- CSS
+- JavaScript
+
+**Does NOT contain:**
+- React components
+- API data
+- Dynamic content
+
+The `<div id="root"></div>` is where React mounts the application.
+
+---
+
+# React Example
+
+```jsx
+import { useEffect, useState } from "react";
+
+function Users() {
+
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+
+        fetch("https://jsonplaceholder.typicode.com/users")
+            .then(res => res.json())
+            .then(data => setUsers(data));
+
+    }, []);
+
+    return (
+        <div>
+            {users.map(user => (
+                <p key={user.id}>{user.name}</p>
+            ))}
+        </div>
+    );
+}
+
+export default Users;
+```
+
+---
+
+# Timeline
+
+```text
+Request Page
+      │
+      ▼
+Receive HTML
+      │
+      ▼
+FCP (Usually Blank/Loader)
+      │
+      ▼
+Download JS
+      │
+      ▼
+Execute JS
+      │
+      ▼
+Fetch Data
+      │
+      ▼
+Render UI
+      │
+      ▼
+TTI (Page Becomes Interactive)
+```
+
+---
+
+# FCP (First Contentful Paint)
+
+The time when the browser shows the **first visible content**.
+
+In CSR, FCP is usually **slower** because the browser waits for JavaScript before displaying meaningful content.
+
+---
+
+# TTI (Time to Interactive)
+
+The time when the page becomes **fully interactive**.
+
+This happens after:
+- JavaScript finishes loading.
+- React renders the UI.
+- Event handlers are attached.
+
+---
+
+# Advantages
+
+- Fast navigation after the first load.
+- Great for interactive applications.
+- Client-side routing is fast.
+- Less rendering work on the server.
+
+---
+
+# Disadvantages
+
+- Slower initial page load.
+- Slower **FCP**.
+- Higher **TTI**.
+- SEO is weaker than SSR.
+- Blank screen/loading spinner before content appears.
+- Large JavaScript bundles can reduce performance.
+
+---
+
+# CSR in Next.js
+
+Use `"use client"` to make a component render on the client.
+
+```jsx
+"use client";
+
+import { useState } from "react";
+
+export default function Counter() {
+
+    const [count, setCount] = useState(0);
+
+    return (
+        <>
+            <h1>{count}</h1>
+
+            <button onClick={() => setCount(count + 1)}>
+                Increment
+            </button>
+        </>
+    );
+}
+```
+
+---
+
+# When to Use CSR
+
+- Dashboard
+- Admin Panel
+- Chat Application
+- Social Media Feed
+- Real-time Apps
+- Private pages after login
+
+---
+
+# Summary
+
+- Rendering happens in the browser.
+- Server sends **HTML + CSS + JavaScript**.
+- React mounts inside the `root` element.
+- JavaScript fetches data and renders the UI.
+- Slower **FCP** and higher **TTI** than SSR.
+- Best for highly interactive applications.
+
